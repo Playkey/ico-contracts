@@ -2,6 +2,7 @@
 pragma solidity ^0.4.11;
 
 import "./PKT.sol";
+import "./installed/token/ERC20.sol";
 
 
 contract ICO {
@@ -138,6 +139,18 @@ contract ICO {
 
   function withdrawEther(uint256 _value) external teamOnly {
     team.transfer(_value);
+  }
+
+
+  // Save tokens from contract
+  function withdrawToken(address _tokenContract, uint256 _value) external teamOnly {
+    ERC20 _token = ERC20(_tokenContract);
+    _token.transfer(team, _value);
+  }
+
+
+  function withdrawTokenFromPkt(address _tokenContract, uint256 _value) external teamOnly {
+    pkt.withdrawToken(_tokenContract, team, _value);
   }
 
 

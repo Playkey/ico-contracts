@@ -53,6 +53,13 @@ contract PKT is StandardToken {
   }
 
 
+  // Save tokens from contract
+  function withdrawToken(address _tokenContract, address where, uint256 _value) external icoOnly {
+    ERC20 _token = ERC20(_tokenContract);
+    _token.transfer(where, _value);
+  }
+
+
   // ERC20 functions
   // =========================
 
