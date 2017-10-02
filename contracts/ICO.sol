@@ -12,8 +12,8 @@ contract ICO {
   uint256 public constant tokensPerEth = 250; // PKT per ETH
   uint256 public constant tokenLimit = 100 * 1e6 * 1e18;
   uint256 public constant tokensForSale = tokenLimit * 60 / 100;
-  uint256 tokensSold = 0;
-  uint256 presaleSold = 0;
+  uint256 private tokensSold = 0;
+  uint256 private presaleSold = 0;
 
 
   // Events
@@ -33,7 +33,7 @@ contract ICO {
   modifier teamOnly { require(msg.sender == team); _; }
 
   enum IcoState { Created, Running, Paused, Finished }
-  IcoState icoState = IcoState.Created;
+  IcoState private icoState = IcoState.Created;
 
 
   // Constructor
