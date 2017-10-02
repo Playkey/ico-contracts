@@ -6,12 +6,12 @@ module.exports = (deployer, network) => {
     const team = web3.eth.accounts[0];
     deployer.deploy(ICO, team);
   }
-  else {
-    // const team =  [ "0xCf8Ff2ad1Bda418d6602c0eDd018Ac6505E242fb" , "0x533Bc61cbD387839c62602eA5C74e3CE67a59a47" , "0x139676600Fd888Ff97bA7F88598c94BA5C6b365e" ];
-    // const requiredConfirmations = 2;
-    //
-    // deployer.deploy(MSig, team, requiredConfirmations)
-    //   .then(MSig.deployed)
-    //   .then(msig => deployer.deploy(ICO, msig.address));
+  else if (network === "ropsten") {
+    const team =  [ "0x3D4058006004d4A00cd562BC34EaD0e61AcF9593" , "0xa73a6822EbF4b3d1930871408b1456186083bC46" , "0x3f799D9f7104B4Ca31A048aba98cd494Ecd4ED09" ];
+    const requiredConfirmations = 2;
+
+    deployer.deploy(MSig, team, requiredConfirmations)
+      .then(MSig.deployed)
+      .then(msig => deployer.deploy(ICO, msig.address));
   }
 };
