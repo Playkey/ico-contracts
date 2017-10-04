@@ -2,9 +2,6 @@ const PKT = artifacts.require("./PKT.sol");
 const ICO = artifacts.require("./ICO.sol");
 
 const ether1 = web3.toWei('1', 'ether');
-const gas = 50000;
-const gasLimit = 21000;
-const gasPrice = web3.eth.gasPrice;
 const [team, foundation, advisors, bounty, investor] = web3.eth.accounts;
 
 
@@ -29,8 +26,7 @@ contract("ico created", () => {
   it("should fail transaction", async () => {
     let ico = await ICO.deployed();
     try {
-      await web3.eth.sendTransaction({from: investor, to: ico.address,
-        value: ether1, gas: gas, gasLimit: gasLimit, gasPrice: gasPrice})
+      await web3.eth.sendTransaction({from: investor, to: ico.address, value: ether1})
     } catch(e) { if (e.name == 'Error') return true; throw e; }
     throw new Error("transaction is not failed");
   });
@@ -109,8 +105,7 @@ contract("ico running", () => {
 
   it("should be able transaction", async () => {
     let ico = await ICO.deployed();
-    await web3.eth.sendTransaction({from: investor, to: ico.address,
-      value: ether1, gas: gas, gasLimit: gasLimit, gasPrice: gasPrice})
+    await web3.eth.sendTransaction({from: investor, to: ico.address, value: ether1})
   });
 
   it("should fail withdrawEther from foreigner address", async () => {
@@ -204,8 +199,7 @@ contract("ico paused", () => {
   it("should fail transaction", async () => {
     let ico = await ICO.deployed();
     try {
-      await web3.eth.sendTransaction({from: investor, to: ico.address,
-        value: ether1, gas: gas, gasLimit: gasLimit, gasPrice: gasPrice})
+      await web3.eth.sendTransaction({from: investor, to: ico.address, value: ether1})
     } catch(e) { if (e.name == 'Error') return true; throw e; }
     throw new Error("transaction is not failed");
   });
@@ -282,8 +276,7 @@ contract("ico finished", () => {
   it("should fail transaction", async () => {
     let ico = await ICO.deployed();
     try {
-      await web3.eth.sendTransaction({from: investor, to: ico.address,
-        value: ether1, gas: gas, gasLimit: gasLimit, gasPrice: gasPrice})
+      await web3.eth.sendTransaction({from: investor, to: ico.address, value: ether1})
     } catch(e) { if (e.name == 'Error') return true; throw e; }
     throw new Error("transaction is not failed");
   });
