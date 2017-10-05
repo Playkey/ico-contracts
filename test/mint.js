@@ -10,9 +10,12 @@ contract("mint", () => {
   let pkt;
   let tokenLimit;
 
-  it("should mint all tokens for sale with 35% discount", async () => {
+  it("should be able to initialize ico", async () => {
     ico = await ICO.deployed();
     tokenLimit = await ico.tokenLimit.call();
+  });
+
+  it("should mint all tokens for sale with 35% discount", async () => {
     await ico.mintForEarlyInvestor(investor, 156000 * ether1, {from: team});
   });
 
