@@ -1,2 +1,2 @@
 # ico-contracts
-Etherium contracts for ICO
+Ethereum contracts for ICO
