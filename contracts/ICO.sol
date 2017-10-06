@@ -123,17 +123,11 @@ contract ICO {
   // Priveleged functions
   // ====================
 
-  function mintForEarlyInvestor(address _investor, uint256 _value) external teamOnly {
-    require(icoState == IcoState.Created);
-    require(_value > 0);
-
-    uint256 _pktValue = getPresaleTotal(_value);
-
-    require(tokensSold + _pktValue <= tokensForSale);
-
-    pkt.mint(_investor, _pktValue);
-    tokensSold += _pktValue;
-    presaleSold += _pktValue;
+  function mintForEarlyInvestors(address[] _investors, uint256[] _values) external teamOnly {
+    require(_investors.length == _values.length);
+    for (uint256 i = 0; i < _investors.length; ++i) {
+      mintPresaleTokens(_investors[i], _values[i]);
+    }
   }
 
 
@@ -189,6 +183,20 @@ contract ICO {
 
   // Private functions
   // =================
+
+  function mintPresaleTokens(address _investor, uint256 _value) internal {
+    require(icoState == IcoState.Created);
+    require(_value > 0);
+
+    uint256 _pktValue = getPresaleTotal(_value);
+
+    require(tokensSold + _pktValue <= tokensForSale);
+
+    pkt.mint(_investor, _pktValue);
+    tokensSold += _pktValue;
+    presaleSold += _pktValue;
+  }
+
 
   function calcPresaleBonus(uint256 _value, uint256 _percent) internal constant returns (uint256) {
     return _value * _percent * tokensPerEth / 100;

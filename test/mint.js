@@ -15,8 +15,31 @@ contract("mint", () => {
     tokenLimit = await ico.tokenLimit.call();
   });
 
+  it("should be able to get token contract", async () => {
+    await ico.pkt.call().then(addr => pkt = PKT.at(addr));
+  });
+
+  it("should fail mintForEarlyInvestors for different arguments lengths", async () => {
+    try {
+      await ico.mintForEarlyInvestors([bounty], [1, 2], {from: team});
+    } catch(e) { if (e.name == 'Error') return true; throw e; }
+    throw new Error("mintForEarlyInvestors is not failed");
+  });
+
+  it("should fail mintForEarlyInvestors for address = 0x0", async () => {
+    try {
+      await ico.mintForEarlyInvestors(['0x0'], [1], {from: team});
+    } catch(e) { if (e.name == 'Error') return true; throw e; }
+    throw new Error("mintForEarlyInvestors is not failed");
+  });
+
   it("should mint all tokens for sale with 35% discount", async () => {
-    await ico.mintForEarlyInvestor(investor, 156000 * ether1, {from: team});
+    await ico.mintForEarlyInvestors([investor], [156000 * ether1], {from: team});
+  });
+
+  it("should be 60% tokens on investor balance", async () => {
+    let balance = await pkt.balanceOf(investor);
+    assert.equal(tokenLimit.mul(0.6).toFixed(), balance.toFixed());
   });
 
   it("should be able to startIco", async () => {
@@ -39,10 +62,6 @@ contract("mint", () => {
 
   it("should be able to finishIco", async () => {
     await ico.finishIco(team, foundation, advisors, bounty, {from: team});
-  });
-
-  it("should be able to get token contract", async () => {
-    await ico.pkt.call().then(addr => pkt = PKT.at(addr));
   });
 
   it("should be 20% tokens for team", async () => {

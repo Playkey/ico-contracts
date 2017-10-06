@@ -38,6 +38,7 @@ contract PKT is StandardToken {
 
   // Mint few tokens and transfer them to some address.
   function mint(address _holder, uint256 _value) external icoOnly {
+    require(_holder != address(0));
     require(_value != 0);
     require(totalSupply + _value <= tokenLimit);
 

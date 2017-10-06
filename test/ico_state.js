@@ -48,15 +48,15 @@ contract("ico created", () => {
     throw new Error("finishIco is not failed");
   });
 
-  it("should fail mintForEarlyInvestor from foreigner address", async () => {
+  it("should fail mintForEarlyInvestors from foreigner address", async () => {
     try {
-      await ico.mintForEarlyInvestor(bounty, 1, {from: investor});
+      await ico.mintForEarlyInvestors([bounty], [1], {from: investor});
     } catch(e) { if (e.name == 'Error') return true; throw e; }
-    throw new Error("mintForEarlyInvestor is not failed");
+    throw new Error("mintForEarlyInvestors is not failed");
   });
 
-  it("should be able mintForEarlyInvestor", async () => {
-    await ico.mintForEarlyInvestor(bounty, 1, {from: team});
+  it("should be able mintForEarlyInvestors", async () => {
+    await ico.mintForEarlyInvestors([bounty], [1], {from: team});
   });
 
   it("should fail startIco from foreigner address", async () => {
@@ -91,11 +91,11 @@ contract("ico running", () => {
     throw new Error("second startIco call is not failed");
   });
 
-  it("should fail mintForEarlyInvestor", async () => {
+  it("should fail mintForEarlyInvestors", async () => {
     try {
-      await ico.mintForEarlyInvestor(bounty, 1, {from: team});
+      await ico.mintForEarlyInvestors([bounty], [1], {from: team});
     } catch(e) { if (e.name == 'Error') return true; throw e; }
-    throw new Error("mintForEarlyInvestor is not failed");
+    throw new Error("mintForEarlyInvestors is not failed");
   });
 
   it("should be able buyFor", async () => {
@@ -193,11 +193,11 @@ contract("ico paused", () => {
     throw new Error("transaction is not failed");
   });
 
-  it("should fail mintForEarlyInvestor", async () => {
+  it("should fail mintForEarlyInvestors", async () => {
     try {
-      await ico.mintForEarlyInvestor(bounty, 1, {from: team});
+      await ico.mintForEarlyInvestors([bounty], [1], {from: team});
     } catch(e) { if (e.name == 'Error') return true; throw e; }
-    throw new Error("mintForEarlyInvestor is not failed");
+    throw new Error("mintForEarlyInvestors is not failed");
   });
 
   it("should fail withdrawEther from foreigner address", async () => {
@@ -265,11 +265,11 @@ contract("ico finished", () => {
     throw new Error("transaction is not failed");
   });
 
-  it("should fail mintForEarlyInvestor", async () => {
+  it("should fail mintForEarlyInvestors", async () => {
     try {
-      await ico.mintForEarlyInvestor(bounty, 1, {from: team});
+      await ico.mintForEarlyInvestors([bounty], [1], {from: team});
     } catch(e) { if (e.name == 'Error') return true; throw e; }
-    throw new Error("mintForEarlyInvestor is not failed");
+    throw new Error("mintForEarlyInvestors is not failed");
   });
 
   it("should fail withdrawEther from foreigner address", async () => {
