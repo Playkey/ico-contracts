@@ -62,13 +62,6 @@ contract ICO {
 
 
   function getPresaleTotal(uint256 _value) public constant returns (uint256) {
-    uint256 _pktValue = _value * tokensPerEth;
-    uint256 _bonus = getPresaleBonus(_value);
-    return _pktValue + _bonus;
-  }
-
-
-  function getPresaleBonus(uint256 _value) public constant returns (uint256) {
     if(_value < 60 ether) {
       return calcPresaleBonus(_value, 20);
     }
@@ -193,12 +186,12 @@ contract ICO {
 
 
   function calcPresaleBonus(uint256 _value, uint256 _percent) internal constant returns (uint256) {
-    return _value * _percent * tokensPerEth / 100;
+    return _value * tokensPerEth * (100 + _percent) / 100;
   }
 
 
   function calcPresaleDiscount(uint256 _value, uint256 _percent) internal constant returns (uint256) {
-    return _value * tokensPerEth * 100 / (100 - _percent) - _value * tokensPerEth;
+    return _value * tokensPerEth * 100 / (100 - _percent);
   }
 
 
@@ -208,9 +201,12 @@ contract ICO {
 
 
   function buy(address _investor, uint256 _value) internal {
-    uint256 _total = getTotal(_value);
+    uint256 _pktValue = _value * tokensPerEth;
+    uint256 _totalSupply = pkt.totalSupply();
+    uint256 _bonus = getBonus(_pktValue, _totalSupply);
+    uint256 _total = _pktValue + _bonus;
 
-    require(pkt.totalSupply() + _total <= tokensForSale);
+    require(_totalSupply + _total <= tokensForSale);
 
     pkt.mint(_investor, _total);
   }

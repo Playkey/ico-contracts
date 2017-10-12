@@ -28,10 +28,15 @@ contract("presale bonus", () => {
           "' to equal '" + res.toFixed().toString() + "'"
       );});
 
+  const calcBonus = (value, total) => {
+    return total.sub(new web3.BigNumber(value).mul(pktPerWei))
+  };
+
   // Bonus 20%
   {
     const checkBonus = (value, bonus) =>
-      ico.getPresaleBonus.call(value)
+      ico.getPresaleTotal.call(value)
+        .then(total => calcBonus(value, total))
         .then(res => assert.equal(bonus.toFixed(), res.toFixed()));
 
     it("should get bonus for 1 Wei", () => checkBonus(1, 50));
@@ -45,7 +50,8 @@ contract("presale bonus", () => {
       () => checkBonus(ether.mul(60).sub(1), pkt.mul(3000).sub(50)));
 
     const checkWrongBonus = (value, bonus) =>
-      ico.getPresaleBonus.call(value)
+      ico.getPresaleTotal.call(value)
+        .then(total => calcBonus(value, total))
         .then(res => assert.notEqual(bonus.toFixed(), res.toFixed()));
 
     it("should get wrong bonus for 60 Ether",
@@ -57,7 +63,8 @@ contract("presale bonus", () => {
 
   // Discount
   const checkDiscount = (value, bonus) =>
-    ico.getPresaleBonus.call(value)
+    ico.getPresaleTotal.call(value)
+      .then(total => calcBonus(value, total))
       .then(res => {
         let b = bonus.round(0, ceil);
         assert(
@@ -67,13 +74,14 @@ contract("presale bonus", () => {
       );});
 
   const checkWrongDiscount = (value, bonus) =>
-    ico.getPresaleBonus.call(value)
-    .then(res => {
-      let b = bonus.round(0, ceil);
-      assert(
-        res.sub(b).abs() > 1,
-        "expected '" + b.toFixed().toString() +
-        "' to equal '" + res.toFixed().toString() + "'"
+    ico.getPresaleTotal.call(value)
+      .then(total => calcBonus(value, total))
+      .then(res => {
+        let b = bonus.round(0, ceil);
+        assert(
+          res.sub(b).abs() > 1,
+          "expected '" + b.toFixed().toString() +
+          "' to equal '" + res.toFixed().toString() + "'"
     );});
 
   // Discount 25%
