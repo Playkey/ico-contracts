@@ -13,7 +13,6 @@ contract ICO {
   uint256 public constant tokensPerEth = 250; // PKT per ETH
   uint256 public constant tokenLimit = 100 * 1e6 * 1e18;
   uint256 public constant tokensForSale = tokenLimit * 60 / 100;
-  uint256 private tokensSold = 0;
   uint256 private presaleSold = 0;
 
 
@@ -62,11 +61,6 @@ contract ICO {
   }
 
 
-  function getTokensSold() public constant returns (uint256) {
-    return tokensSold;
-  }
-
-
   function getPresaleTotal(uint256 _value) public constant returns (uint256) {
     uint256 _pktValue = _value * tokensPerEth;
     uint256 _bonus = getPresaleBonus(_value);
@@ -79,7 +73,7 @@ contract ICO {
       return calcPresaleBonus(_value, 20);
     }
 
-	  if(_value >= 60 ether && _value < 150 ether) {
+    if(_value >= 60 ether && _value < 150 ether) {
       return calcPresaleDiscount(_value, 25);
     }
 
@@ -95,7 +89,7 @@ contract ICO {
 
   function getTotal(uint256 _value) public constant returns (uint256) {
     uint256 _pktValue = _value * tokensPerEth;
-    uint256 _bonus = getBonus(_pktValue, tokensSold);
+    uint256 _bonus = getBonus(_pktValue, pkt.totalSupply());
     return _pktValue + _bonus;
   }
 
@@ -154,6 +148,8 @@ contract ICO {
   function startIco() external teamOnly {
     require(icoState == IcoState.Created || icoState == IcoState.Paused);
     icoState = IcoState.Running;
+    if (presaleSold == 0)
+      presaleSold = pkt.totalSupply();
     RunIco();
   }
 
@@ -190,11 +186,9 @@ contract ICO {
 
     uint256 _pktValue = getPresaleTotal(_value);
 
-    require(tokensSold + _pktValue <= tokensForSale);
+    require(pkt.totalSupply() + _pktValue <= tokensForSale);
 
     pkt.mint(_investor, _pktValue);
-    tokensSold += _pktValue;
-    presaleSold += _pktValue;
   }
 
 
@@ -216,9 +210,8 @@ contract ICO {
   function buy(address _investor, uint256 _value) internal {
     uint256 _total = getTotal(_value);
 
-    require(tokensSold + _total <= tokensForSale);
+    require(pkt.totalSupply() + _total <= tokensForSale);
 
     pkt.mint(_investor, _total);
-    tokensSold += _total;
   }
 }
