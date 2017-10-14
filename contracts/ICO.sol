@@ -140,9 +140,9 @@ contract ICO {
 
   function startIco() external teamOnly {
     require(icoState == IcoState.Created || icoState == IcoState.Paused);
-    icoState = IcoState.Running;
-    if (presaleSold == 0)
+    if (icoState == IcoState.Created)
       presaleSold = pkt.totalSupply();
+    icoState = IcoState.Running;
     RunIco();
   }
 
@@ -203,8 +203,7 @@ contract ICO {
   function buy(address _investor, uint256 _value) internal {
     uint256 _pktValue = _value * tokensPerEth;
     uint256 _totalSupply = pkt.totalSupply();
-    uint256 _bonus = getBonus(_pktValue, _totalSupply);
-    uint256 _total = _pktValue + _bonus;
+    uint256 _total = _pktValue + getBonus(_pktValue, _totalSupply);
 
     require(_totalSupply + _total <= tokensForSale);
 
