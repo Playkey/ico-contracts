@@ -32,33 +32,13 @@ contract("presale bonus", () => {
     return total.sub(new web3.BigNumber(value).mul(pktPerWei))
   };
 
-  // Bonus 20%
+  // No discount
   {
-    const checkBonus = (value, bonus) =>
-      ico.getPresaleTotal.call(value)
-        .then(total => calcBonus(value, total))
-        .then(res => assert.equal(bonus.toFixed(), res.toFixed()));
-
-    it("should get bonus for 1 Wei", () => checkBonus(1, 50));
-    it("should get bonus for 5 Wei", () => checkBonus(5, 250));
-
     const pkt = new web3.BigNumber("1e18");
-
-    it("should get bonus for 10 Ether",
-      () => checkBonus(ether.mul(10), pkt.mul(500)));
-    it("should get bonus for 59.999999999999999999 Ether",
-      () => checkBonus(ether.mul(60).sub(1), pkt.mul(3000).sub(50)));
-
-    const checkWrongBonus = (value, bonus) =>
-      ico.getPresaleTotal.call(value)
-        .then(total => calcBonus(value, total))
-        .then(res => assert.notEqual(bonus.toFixed(), res.toFixed()));
-
-    it("should get wrong bonus for 60 Ether",
-      () => checkWrongBonus(ether.mul(60), pkt.mul(3000)));
-
-    it("should get total for 1 Wei", () => checkTotal(1, new web3.BigNumber(300)));
-    it("should get total for 1 Ether", () => checkTotal(ether, pkt.mul(300)));
+    it("should get total for 1 Wei", () => checkTotal(1, new web3.BigNumber(pktPerWei)));
+    it("should get total for 1 Ether", () => checkTotal(ether, pkt.mul(pktPerWei)));
+    it("should get total for 59.999999999999999999 Ether",
+      () => checkTotal(ether.mul(60).sub(1), pkt.mul(60 * pktPerWei).sub(pktPerWei)));
   }
 
   // Discount

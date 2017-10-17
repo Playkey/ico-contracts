@@ -63,7 +63,7 @@ contract ICO {
 
   function getPresaleTotal(uint256 _value) public constant returns (uint256) {
     if(_value < 60 ether) {
-      return calcPresaleBonus(_value, 20);
+      return _value * tokensPerEth;
     }
 
     if(_value >= 60 ether && _value < 150 ether) {
@@ -182,11 +182,6 @@ contract ICO {
     require(pkt.totalSupply() + _pktValue <= tokensForSale);
 
     pkt.mint(_investor, _pktValue);
-  }
-
-
-  function calcPresaleBonus(uint256 _value, uint256 _percent) internal constant returns (uint256) {
-    return _value * tokensPerEth * (100 + _percent) / 100;
   }
 
 
