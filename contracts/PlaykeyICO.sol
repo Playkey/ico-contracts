@@ -5,7 +5,7 @@ import "./PKT.sol";
 import "./installed/token/ERC20.sol";
 
 
-contract ICO {
+contract PlaykeyICO {
 
   // Constants
   // =========
@@ -39,7 +39,7 @@ contract ICO {
   // Constructor
   // ===========
 
-  function ICO(address _team) {
+  function PlaykeyICO(address _team) {
     team = _team;
     pkt = new PKT(this, tokenLimit);
   }

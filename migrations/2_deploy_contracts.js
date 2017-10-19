@@ -1,4 +1,4 @@
-const ICO = artifacts.require("./ICO.sol");
+const ICO = artifacts.require("./PlaykeyICO.sol");
 const MSig = artifacts.require("./installed/MultiSigWallet.sol");
 
 module.exports = (deployer, network) => {

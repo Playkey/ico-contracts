@@ -1,5 +1,5 @@
 const PKT = artifacts.require("./PKT.sol");
-const ICO = artifacts.require("./ICO.sol");
+const ICO = artifacts.require("./PlaykeyICO.sol");
 
 const ether1 = web3.toWei('1', 'ether');
 const [team, foundation, advisors, bounty, investor] = web3.eth.accounts;

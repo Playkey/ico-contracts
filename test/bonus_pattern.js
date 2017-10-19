@@ -1,5 +1,5 @@
 const PKT = artifacts.require("./PKT.sol");
-const ICO = artifacts.require("./ICO.sol");
+const ICO = artifacts.require("./PlaykeyICO.sol");
 
 contract("bonus pattern", () => {
 
