@@ -32,8 +32,8 @@ contract PlaykeyICO {
   address public team;
   modifier teamOnly { require(msg.sender == team); _; }
 
-  enum IcoState { Created, Running, Paused, Finished }
-  IcoState private icoState = IcoState.Created;
+  enum IcoState { Presale, Running, Paused, Finished }
+  IcoState public icoState = IcoState.Presale;
 
 
   // Constructor
@@ -82,7 +82,8 @@ contract PlaykeyICO {
 
   function getTotal(uint256 _value) public constant returns (uint256) {
     uint256 _pktValue = _value * tokensPerEth;
-    uint256 _bonus = getBonus(_pktValue, pkt.totalSupply());
+    uint256 _bonus = getBonus(_pktValue, pkt.totalSupply() - presaleSold);
+
     return _pktValue + _bonus;
   }
 
@@ -139,9 +140,7 @@ contract PlaykeyICO {
   // --------------------------------------------
 
   function startIco() external teamOnly {
-    require(icoState == IcoState.Created || icoState == IcoState.Paused);
-    if (icoState == IcoState.Created)
-      presaleSold = pkt.totalSupply();
+    require(icoState == IcoState.Presale || icoState == IcoState.Paused);
     icoState = IcoState.Running;
     RunIco();
   }
@@ -174,7 +173,7 @@ contract PlaykeyICO {
   // =================
 
   function mintPresaleTokens(address _investor, uint256 _value) internal {
-    require(icoState == IcoState.Created);
+    require(icoState == IcoState.Presale);
     require(_value > 0);
 
     uint256 _pktValue = getPresaleTotal(_value);
@@ -182,6 +181,7 @@ contract PlaykeyICO {
     require(pkt.totalSupply() + _pktValue <= tokensForSale);
 
     pkt.mint(_investor, _pktValue);
+    presaleSold += _pktValue;
   }
 
 
@@ -196,11 +196,9 @@ contract PlaykeyICO {
 
 
   function buy(address _investor, uint256 _value) internal {
-    uint256 _pktValue = _value * tokensPerEth;
-    uint256 _totalSupply = pkt.totalSupply();
-    uint256 _total = _pktValue + getBonus(_pktValue, _totalSupply);
+    uint256 _total = getTotal(_value);
 
-    require(_totalSupply + _total <= tokensForSale);
+    require(pkt.totalSupply() + _total <= tokensForSale);
 
     pkt.mint(_investor, _total);
   }
