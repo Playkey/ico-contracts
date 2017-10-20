@@ -4,19 +4,26 @@ const ICO = artifacts.require("./PlaykeyICO.sol");
 const ether1 = web3.toWei('1', 'ether');
 const [team, foundation, advisors, bounty, investor] = web3.eth.accounts;
 
+const getTeamFund = (limit, sale, sold) => {
+  return limit.sub(sale).mul(sold.div(sale)).add(sold);
+}
+
 contract("mint", () => {
 
   let ico;
   let pkt;
   let tokenLimit;
+  let tokensForSale;
+  let tokensSold;
 
   it("should be able to initialize ico", async () => {
     ico = await ICO.deployed();
-    tokenLimit = await ico.tokenLimit.call();
+    tokenLimit = await ico.tokenLimit();
+    tokensForSale = await ico.tokensForSale();
   });
 
-  it("should be able to get token contract", async () => {
-    await ico.pkt.call().then(addr => pkt = PKT.at(addr));
+  it("should be able to get token contract", () => {
+    ico.pkt.call().then(addr => pkt = PKT.at(addr));
   });
 
   it("should fail mintForEarlyInvestors for different arguments lengths", async () => {
@@ -35,6 +42,8 @@ contract("mint", () => {
 
   it("should mint all tokens for sale with 35% discount", async () => {
     await ico.mintForEarlyInvestors([investor], [156000 * ether1], {from: team});
+    tokensSold = await pkt.totalSupply();
+    assert.equal(tokensForSale.toFixed(), tokensSold.toFixed());
   });
 
   it("should be 60% tokens on investor balance", async () => {
@@ -64,23 +73,58 @@ contract("mint", () => {
     await ico.finishIco(team, foundation, advisors, bounty, {from: team});
   });
 
-  it("should be 20% tokens for team", async () => {
-    let balance = await pkt.balanceOf(team);
-    assert.equal(tokenLimit.mul(0.2).toFixed(), balance.toFixed());
+  const checkBalance = async (address, percent) => {
+    let balance = await pkt.balanceOf(address);
+    let teamFund = getTeamFund(tokenLimit, tokensForSale, tokensSold);
+    assert.equal(teamFund.mul(percent).toFixed(), balance.toFixed());
+  };
+
+  it("should be 20% tokens for team", () => checkBalance(team, 0.2));
+  it("should be 12.5% tokens for foundation", () => checkBalance(foundation, 0.125));
+  it("should be 6% tokens for advisors", () => checkBalance(advisors, 0.06));
+  it("should be 1.5% tokens for bounty", () => checkBalance(bounty, 0.015));
+})
+
+contract("mint 50%", () => {
+
+  let ico;
+  let pkt;
+  let tokenLimit;
+  let tokensForSale;
+  let tokensSold;
+
+  it("should be able to initialize ico", async () => {
+    ico = await ICO.deployed();
+    tokenLimit = await ico.tokenLimit();
+    tokensForSale = await ico.tokensForSale();
   });
 
-  it("should be 12.5% tokens for foundation", async () => {
-    let balance = await pkt.balanceOf(foundation);
-    assert.equal(tokenLimit.mul(0.125).toFixed(), balance.toFixed());
+  it("should be able to get token contract", () => {
+    ico.pkt.call().then(addr => pkt = PKT.at(addr));
   });
 
-  it("should be 6% tokens for advisors", async () => {
-    let balance = await pkt.balanceOf(advisors);
-    assert.equal(tokenLimit.mul(0.06).toFixed(), balance.toFixed());
+  it("should mint 50 % tokens with 35% discount", async () => {
+    await ico.mintForEarlyInvestors([investor], [78000 * ether1], {from: team});
+    tokensSold = await pkt.totalSupply();
+    assert.equal(tokensForSale.mul(0.5).toFixed(), tokensSold.toFixed());
   });
 
-  it("should be 1.5% tokens for bounty", async () => {
-    let balance = await pkt.balanceOf(bounty);
-    assert.equal(tokenLimit.mul(0.015).toFixed(), balance.toFixed());
+  it("should be able to startIco", async () => {
+    await ico.startIco({from: team});
   });
+
+  it("should be able to finishIco", async () => {
+    await ico.finishIco(team, foundation, advisors, bounty, {from: team});
+  });
+
+  const checkBalance = async (address, percent) => {
+    let balance = await pkt.balanceOf(address);
+    let teamFund = getTeamFund(tokenLimit, tokensForSale, tokensSold);
+    assert.equal(teamFund.mul(percent).toFixed(), balance.toFixed());
+  };
+
+  it("should be 20% tokens for team", () => checkBalance(team, 0.2));
+  it("should be 12.5% tokens for foundation", () => checkBalance(foundation, 0.125));
+  it("should be 6% tokens for advisors", () => checkBalance(advisors, 0.06));
+  it("should be 1.5% tokens for bounty", () => checkBalance(bounty, 0.015));
 })

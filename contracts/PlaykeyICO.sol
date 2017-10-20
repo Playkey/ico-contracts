@@ -157,11 +157,13 @@ contract PlaykeyICO {
     require(icoState == IcoState.Running || icoState == IcoState.Paused);
 
     icoState = IcoState.Finished;
+    uint256 _teamFund = pkt.totalSupply() * 2 / 3;
 
-    pkt.mint(_team, tokenLimit * 200 / 1000);
-    pkt.mint(_foundation, tokenLimit * 125 / 1000);
-    pkt.mint(_advisors, tokenLimit * 60 / 1000);
-    pkt.mint(_bounty, tokenLimit * 15 / 1000);
+    uint256 _den = 10000;
+    pkt.mint(_team, _teamFund * 5000 / _den);
+    pkt.mint(_foundation, _teamFund * 3125 / _den);
+    pkt.mint(_advisors, _teamFund * 1500 / _den);
+    pkt.mint(_bounty, _teamFund - _teamFund * 9625 / _den);
 
     pkt.defrost();
 
