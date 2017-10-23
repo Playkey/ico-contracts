@@ -51,9 +51,7 @@ contract("mint", () => {
     assert.equal(tokenLimit.mul(0.6).toFixed(), balance.toFixed());
   });
 
-  it("should be able to startIco", async () => {
-    await ico.startIco({from: team});
-  });
+  it("should be able to startIco", async () => await ico.startIco({from: team}));
 
   it("should fail buyFor", async () => {
       try {
@@ -85,6 +83,7 @@ contract("mint", () => {
   it("should be 1.5% tokens for bounty", () => checkBalance(bounty, 0.015));
 })
 
+
 contract("mint 50%", () => {
 
   let ico;
@@ -109,9 +108,7 @@ contract("mint 50%", () => {
     assert.equal(tokensForSale.mul(0.5).toFixed(), tokensSold.toFixed());
   });
 
-  it("should be able to startIco", async () => {
-    await ico.startIco({from: team});
-  });
+  it("should be able to startIco", async () => await ico.startIco({from: team}));
 
   it("should be able to finishIco", async () => {
     await ico.finishIco(team, foundation, advisors, bounty, {from: team});
@@ -127,4 +124,36 @@ contract("mint 50%", () => {
   it("should be 12.5% tokens for foundation", () => checkBalance(foundation, 0.125));
   it("should be 6% tokens for advisors", () => checkBalance(advisors, 0.06));
   it("should be 1.5% tokens for bounty", () => checkBalance(bounty, 0.015));
+})
+
+
+contract("mint for", () => {
+
+  let ico;
+  let pkt;
+
+  it("should be able to initialize ico", async () => ico = await ICO.deployed());
+
+  it("should be able to get token contract", () => {
+    ico.pkt.call().then(addr => pkt = PKT.at(addr));
+  });
+
+  const checkBalance = async (address, balance) => {
+    let res = await pkt.balanceOf(address);
+    assert.equal(balance.toFixed(), res.toFixed());
+  }
+
+  const checkMintFor = async (address, value) => {
+    await ico.mintFor(address, value);
+    await checkBalance(address, value);
+  };
+
+  it("should mint 10 tokens", () => checkMintFor(team, 10));
+  it("should be able to startIco", async () => await ico.startIco({from: team}));
+  it("should mint 20 tokens", () => checkMintFor(foundation, 20));
+  it("should be able to pauseIco", async () => await ico.pauseIco({from: team}));
+  it("should mint 30 tokens", () => checkMintFor(advisors, 30));
+  it("should be able to finishIco", async () => {
+    await ico.finishIco(team, foundation, advisors, bounty, {from: team});
+  });
 })

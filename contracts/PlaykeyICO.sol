@@ -119,6 +119,14 @@ contract PlaykeyICO {
   }
 
 
+  function mintFor(address _investor, uint256 _pktValue) external teamOnly {
+    require(icoState != IcoState.Finished);
+    require(pkt.totalSupply() + _pktValue <= tokensForSale);
+
+    pkt.mint(_investor, _pktValue);
+  }
+
+
   function withdrawEther(uint256 _value) external teamOnly {
     team.transfer(_value);
   }
