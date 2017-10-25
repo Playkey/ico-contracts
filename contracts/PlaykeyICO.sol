@@ -13,7 +13,7 @@ contract PlaykeyICO {
   uint256 public constant tokensPerEth = 250; // PKT per ETH
   uint256 public constant tokenLimit = 100 * 1e6 * 1e18;
   uint256 public constant tokensForSale = tokenLimit * 60 / 100;
-  uint256 private presaleSold = 0;
+  uint256 public presaleSold = 0;
 
 
   // Events
