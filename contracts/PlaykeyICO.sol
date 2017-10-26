@@ -1,5 +1,4 @@
-
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
 
 import "./PKT.sol";
 import "./installed/token/ERC20.sol";
